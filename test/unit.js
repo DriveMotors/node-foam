@@ -39,7 +39,8 @@ describe('unit tests', function () {
           'Soapaction': "http://www.w3schools.com/webservices/CelsiusToFahrenheit"
         },
         rejectUnauthorized: undefined,
-        secureProtocol: undefined
+        secureProtocol: undefined,
+        timeout: undefined
       }).returns(req);
       var foam = require('../foam');
       foam(uri, operation, action, message, {namespace: namespace}, noop);
@@ -57,10 +58,11 @@ describe('unit tests', function () {
           'Soapaction': "http://www.w3schools.com/webservices/CelsiusToFahrenheit"
         },
         rejectUnauthorized: false,
-        secureProtocol: 'SSLv3_method'
+        secureProtocol: 'SSLv3_method',
+        timeout: 9000
       }).returns(req);
       var foam = require('../foam');
-      foam(uri, operation, action, message, {namespace: namespace, rejectUnauthorized: false, secureProtocol: 'SSLv3_method'}, noop);
+      foam(uri, operation, action, message, {namespace: namespace, rejectUnauthorized: false, secureProtocol: 'SSLv3_method', timeout: 9000}, noop);
       mock.verify();
     });
 

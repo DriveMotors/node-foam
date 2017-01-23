@@ -45,3 +45,4 @@ foam(uri, operation, action, message, {namespace: namespace},
 - `benchmark` - set to true to log the request timing to the console, defaults **false**
 - `rejectUnauthorized` - set to false to accept invalid certificates
 - `secureProtocol` - set to specific ssl protocol e.g. `SSLv3_method`
+- `timeout` - set to milliseconds before request is considered timed out, defaults to `Math.pow(2, 32) * 1000`

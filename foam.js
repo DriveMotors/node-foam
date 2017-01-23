@@ -28,7 +28,8 @@ module.exports = function soap (uri, operation, action, message, options, callba
   var req = hyperquest.post(uri, {
     headers: headers(action, xml.length),
     rejectUnauthorized: options.rejectUnauthorized,
-    secureProtocol: options.secureProtocol
+    secureProtocol: options.secureProtocol,
+    timeout: options.timeout
   });
   req.on('error', callback);
   req.on('response', function (res) {
