@@ -23,7 +23,7 @@ module.exports = function soap (uri, operation, action, message, options, callba
       return;
     }
     try {
-      var obj = XML.parse(payload)['Envelope']['Body'];
+      var obj = XML.parse(payload.toString())['Envelope']['Body'];
       callback(null, obj);
     } catch (error) {
       callback(error);
