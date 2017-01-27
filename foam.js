@@ -1,4 +1,4 @@
-var hyperquest = require('hyperquest')
+var Wreck = require('wreck')
   , XML = require('simple-xml')
   , StringStream = require('stream-ext').StringStream
   , zlib = require('zlib')
@@ -10,35 +10,25 @@ module.exports = function soap (uri, operation, action, message, options, callba
     options = {};
   }
   var xml = envelope(operation, message, options);
-  if (options.benchmark) console.time('soap request: ' + uri);
 
-  var stream = new StringStream();
-  stream.on('error', callback);
-  stream.on('end', function (data) {
-    if (options.benchmark) console.timeEnd('soap request: ' + uri);
-    try {
-      var obj = XML.parse(data)['Envelope']['Body'];
-      callback(null, obj);
-    }
-    catch (err) {
-      callback(err);
-    }
-  });
-
-  var req = hyperquest.post(uri, {
+  var req = Wreck.post(uri, {
     headers: headers(action, xml.length),
     rejectUnauthorized: options.rejectUnauthorized,
     secureProtocol: options.secureProtocol,
-    timeout: options.timeout
+    timeout: options.timeout,
+    payload: xml
+  }, (error, response, payload) => {
+    if (error) {
+      callback(error);
+      return;
+    }
+    try {
+      var obj = XML.parse(payload)['Envelope']['Body'];
+      callback(null, obj);
+    } catch (error) {
+      callback(error);
+    }
   });
-  req.on('error', callback);
-  req.on('response', function (res) {
-    if (isGzipped(res))
-      res.pipe(gunzip(callback)).pipe(stream);
-    else
-      res.pipe(stream);
-  });
-  req.end(xml);
 };
 
 function envelope (operation, message, options) {
