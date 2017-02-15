@@ -1,4 +1,4 @@
-# foam
+# foam (With @DriveMotors changes!)
 
 Simple SOAP client for NodeJS.
 This module was created because none of the existing SOAP modules (most modules depend of https://www.npmjs.org/package/soap)
