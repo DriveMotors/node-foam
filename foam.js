@@ -1,4 +1,5 @@
 var Wreck = require('wreck')
+  , logger = require('@drivemotors/logger')('foam')
   , XML = require('simple-xml')
   , StringStream = require('stream-ext').StringStream
   , zlib = require('zlib')
@@ -10,14 +11,16 @@ module.exports = function soap (uri, operation, action, message, options, callba
     options = {};
   }
   var xml = envelope(operation, message, options);
-
-  var req = Wreck.post(uri, {
+  var options = {
     headers: headers(action, xml.length),
     rejectUnauthorized: options.rejectUnauthorized,
     secureProtocol: options.secureProtocol,
     timeout: options.timeout,
     payload: xml
-  }, (error, response, payload) => {
+  };
+  logger.verbose('request', {uri, options});
+  var req = Wreck.post(uri, options, (error, response, payload) => {
+    logger.verbose('response', {error, response, payload});
     if (error) {
       callback(error);
       return;

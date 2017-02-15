@@ -14,6 +14,7 @@
   "author": "Jerome Touffe-Blin <jtblin@gmail.com>",
   "license": "BSD-2-Clause",
   "dependencies": {
+    "@drivemotors/logger": "^3.0.0",
     "hyperquest": "^2.1.2",
     "simple-xml": "~0.0.10",
     "stream-ext": "~0.0.1"
