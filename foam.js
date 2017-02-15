@@ -20,13 +20,15 @@ module.exports = function soap (uri, operation, action, message, options, callba
   };
   logger.verbose('request', {uri, options});
   var req = Wreck.post(uri, options, (error, response, payload) => {
-    logger.verbose('response', {error, response, payload});
     if (error) {
+      logger.errorError('response Error', error, {response, payload});
       callback(error);
       return;
     }
     try {
-      var obj = XML.parse(payload.toString())['Envelope']['Body'];
+      var body = payload.toString();
+      logger.verbose('response', {body, response, payload});
+      var obj = XML.parse(body)['Envelope']['Body'];
       callback(null, obj);
     } catch (error) {
       callback(error);
