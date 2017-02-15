@@ -11,15 +11,15 @@ module.exports = function soap (uri, operation, action, message, options, callba
     options = {};
   }
   var xml = envelope(operation, message, options);
-  var options = {
+  var wreckOptions = {
     headers: headers(action, xml.length),
     rejectUnauthorized: options.rejectUnauthorized,
     secureProtocol: options.secureProtocol,
     timeout: options.timeout,
     payload: xml
   };
-  logger.verbose('request', {uri, options});
-  var req = Wreck.post(uri, options, (error, response, payload) => {
+  logger.verbose('request', {uri, operation, action, message, options, wreckOptions});
+  var req = Wreck.post(uri, wreckOptions, (error, response, payload) => {
     if (error) {
       logger.errorError('response Error', error, {response, payload});
       callback(error);
