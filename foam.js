@@ -28,8 +28,12 @@ module.exports = function soap (uri, operation, action, message, options, callba
     try {
       var body = payload.toString();
       logger.verbose('response', {body, response, payload});
-      var obj = XML.parse(body)['Envelope']['Body'];
-      callback(null, obj);
+      var xml = XML.parse(body);
+      if (xml.Envelope) {
+        callback(null, xml.Envelope.Body);
+      } else {
+        callback('missing envelope - ' + xml.BODY);
+      }
     } catch (error) {
       callback(error);
     }
