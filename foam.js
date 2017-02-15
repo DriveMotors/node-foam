@@ -32,7 +32,7 @@ module.exports = function soap (uri, operation, action, message, options, callba
       if (xml.Envelope) {
         callback(null, xml.Envelope.Body);
       } else {
-        callback('missing envelope - ' + xml.BODY);
+        callback('missing envelope - ' + body);
       }
     } catch (error) {
       callback(error);
