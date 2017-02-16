@@ -18,16 +18,16 @@ module.exports = function soap (uri, operation, action, message, options, callba
     timeout: options.timeout,
     payload: xml
   };
-  logger.verbose('request', {uri, operation, action, message, options, wreckOptions});
+  logger.debug('request', {uri, operation, action, message, options, wreckOptions});
   var req = Wreck.post(uri, wreckOptions, (error, response, payload) => {
     if (error) {
-      logger.errorError('response Error', error, {response, payload});
+      logger.errorError('response Error', error, {response});
       callback(error);
       return;
     }
     try {
       var body = payload.toString();
-      logger.verbose('response', {body, response, payload});
+      logger.debug('response', {body, response});
       var xml = XML.parse(body);
       if (xml.Envelope) {
         callback(null, xml.Envelope.Body);
