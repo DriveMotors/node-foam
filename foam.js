@@ -24,18 +24,21 @@ module.exports = function soap (uri, operation, action, message, options, callba
       callback(error);
       return;
     }
+
+    var result = null;
     try {
       var body = payload.toString();
       // console.log('response', {body, response});
       var xml = XML.parse(body);
       if (xml.Envelope) {
-        callback(null, xml.Envelope.Body);
+        result = xml.Envelope.Body;
       } else {
-        callback('missing envelope - ' + body);
+        error = 'missing envelope - ' + body;
       }
-    } catch (error) {
-      callback(error);
+    } catch (e) {
+      error = e;
     }
+    callback(error, result);
   });
 };
 
