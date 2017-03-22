@@ -18,7 +18,7 @@ module.exports = function soap (uri, operation, action, message, options, callba
     payload: xml
   };
   // console.log('request', {uri, operation, action, message, options, wreckOptions});
-  var req = Wreck.post(uri, wreckOptions, (error, response, payload) => {
+  return Wreck.post(uri, wreckOptions, (error, response, payload) => {
     if (error) {
       console.error('response Error', error, {response});
       callback(error);
