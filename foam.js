@@ -10,6 +10,7 @@ module.exports = function soap (uri, operation, action, message, options, callba
     options = {};
   }
   var xml = envelope(operation, message, options);
+  // console.log(xml);
   var wreckOptions = {
     headers: headers(action, xml.length),
     rejectUnauthorized: options.rejectUnauthorized,
@@ -20,7 +21,7 @@ module.exports = function soap (uri, operation, action, message, options, callba
   // console.log('request', {uri, operation, action, message, options, wreckOptions});
   return Wreck.post(uri, wreckOptions, (error, response, payload) => {
     if (error) {
-      console.error('response Error', error, {response});
+      // console.error('response Error', error, {response});
       callback(error);
       return;
     }
