@@ -17,7 +17,7 @@ module.exports = function soap (uri, operation, action, message, options, callba
     payload: xml
   };
   // console.log('request', {uri, operation, action, message, options, wreckOptions});
-  const request = Wreck.post(uri, wreckOptions, function (error, response, payload) {
+  return Wreck.post(uri, wreckOptions, function (error, response, payload) {
     if (error) {
       // console.error('response Error', error, {response});
       callback(error);
@@ -39,8 +39,6 @@ module.exports = function soap (uri, operation, action, message, options, callba
     }
     callback(error, result);
   });
-
-  return {request: request, xml: xml}
 };
 
 function envelope (operation, message, options) {
