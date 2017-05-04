@@ -1,8 +1,6 @@
-var Wreck = require('wreck')
-  , XML = require('simple-xml')
-  , StringStream = require('stream-ext').StringStream
-  , zlib = require('zlib')
-  ;
+var Wreck = require('wreck'),
+  XML = require('simple-xml'),
+  zlib = require('zlib');
 
 module.exports = function soap (uri, operation, action, message, options, callback) {
   if (typeof options === 'function') {
@@ -19,7 +17,7 @@ module.exports = function soap (uri, operation, action, message, options, callba
     payload: xml
   };
   // console.log('request', {uri, operation, action, message, options, wreckOptions});
-  return Wreck.post(uri, wreckOptions, (error, response, payload) => {
+  const request = Wreck.post(uri, wreckOptions, function (error, response, payload) {
     if (error) {
       // console.error('response Error', error, {response});
       callback(error);
@@ -41,11 +39,14 @@ module.exports = function soap (uri, operation, action, message, options, callba
     }
     callback(error, result);
   });
+
+  return {request: request, xml: xml}
 };
 
 function envelope (operation, message, options) {
   var xml = '<?xml version="1.0" encoding="UTF-8"?>';
-  xml += '<env:Envelope xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ' +
+  xml += '<env:Envelope xmlns:xsd="http://www.w3.org/2001/XMLSchema" ' +
+    'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ' +
     'xmlns:env="http://schemas.xmlsoap.org/soap/envelope/" ' + namespaces(options.namespaces) + '>';
 
   if (options.header) {
@@ -84,14 +85,4 @@ function namespaces (ns) {
 
 function serializeOperation (operation, options) {
   return '<' + operation + (options.namespace ? ' xmlns="' + options.namespace + '"' : '') + '>';
-}
-
-function gunzip (callback) {
-  var gunzip = zlib.createGunzip();
-  gunzip.on('error', callback);
-  return gunzip;
-}
-
-function isGzipped(response) {
-  return /gzip/.test(response.headers['content-encoding']);
 }
