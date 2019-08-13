@@ -1,6 +1,6 @@
 {
   "name": "@drivemotors/foam",
-  "version": "0.4.12",
+  "version": "0.5.0",
   "description": "A simple soap client",
   "main": "foam.js",
   "keywords": [
@@ -14,9 +14,8 @@
   "author": "Jerome Touffe-Blin <jtblin@gmail.com>",
   "license": "BSD-2-Clause",
   "dependencies": {
-    "hyperquest": "^2.1.2",
     "simple-xml": "~0.0.10",
-    "stream-ext": "~0.0.1"
+    "wreck": "^10.0.0"
   },
   "devDependencies": {
     "mocha": "~1.18.2",
