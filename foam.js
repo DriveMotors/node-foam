@@ -1,48 +1,38 @@
-var Wreck = require('wreck'),
-  XML = require('simple-xml'),
-  zlib = require('zlib');
+const axios = require('axios');
+const XML = require('simple-xml');
 
-module.exports = function soap (uri, operation, action, message, options, callback) {
+module.exports = (uri, operation, action, message, options, callback) => {
   if (typeof options === 'function') {
     callback = options;
     options = {};
   }
-  var xml = envelope(operation, message, options);
-  // console.log(xml);
-  var wreckOptions = {
-    headers: headers(action, xml.length),
-    rejectUnauthorized: options.rejectUnauthorized,
-    secureProtocol: options.secureProtocol,
-    timeout: options.timeout,
-    payload: xml
-  };
-  // console.log('request', {uri, operation, action, message, options, wreckOptions});
-  return Wreck.post(uri, wreckOptions, function (error, response, payload) {
-    if (error) {
-      // console.error('response Error', error, {response});
-      callback(error);
-      return;
-    }
 
-    var result = null;
-    try {
-      var body = payload.toString();
-      // console.log('response', {body, response});
-      var xml = XML.parse(body);
-      if (xml.Envelope) {
-        result = xml.Envelope.Body;
-      } else {
-        error = 'missing envelope - ' + body;
+  const xml = envelope(operation, message, options);
+
+  const config = {
+    headers: headers(action, xml.length),
+    timeout: options.timeout
+  };
+
+  axios.post(uri, xml, config)
+    .then(response => {
+      try {
+        const json = parseResponse(response.data);
+        callback(null, json);
+      } catch (err) {
+        callback(err);
       }
-    } catch (e) {
-      error = e;
-    }
-    callback(error, result);
-  });
+    })
+    .catch(err => {
+      err = handleError(err);
+      callback(err, null);
+    });
+
+  return xml;
 };
 
-function envelope (operation, message, options) {
-  var xml = '<?xml version="1.0" encoding="UTF-8"?>';
+const envelope = (operation, message, options) => {
+  let xml = '<?xml version="1.0" encoding="UTF-8"?>';
   xml += '<env:Envelope xmlns:xsd="http://www.w3.org/2001/XMLSchema" ' +
     'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ' +
     'xmlns:env="http://schemas.xmlsoap.org/soap/envelope/" ' + namespaces(options.namespaces) + '>';
@@ -61,26 +51,50 @@ function envelope (operation, message, options) {
   xml += '</env:Envelope>';
 
   return xml;
-}
+};
 
-function headers (schema, length) {
+const headers = (schema, length) => {
   return {
     Soapaction: schema,
     'Content-Type': 'text/xml;charset=UTF-8',
     'Content-Length': length,
     'Accept-Encoding': 'gzip',
     Accept: '*/*'
-  }
-}
+  };
+};
 
-function namespaces (ns) {
-  var attributes = '';
-  for (var name in ns) {
+const namespaces = ns => {
+  let attributes = '';
+  for (const name in ns) {
     attributes += name + '="' + ns[name] + '" ';
   }
   return attributes.trim();
-}
+};
 
-function serializeOperation (operation, options) {
+const serializeOperation = (operation, options) => {
   return '<' + operation + (options.namespace ? ' xmlns="' + options.namespace + '"' : '') + '>';
-}
+};
+
+const parseResponse = response => {
+  const xml = XML.parse(response);
+
+  if (xml.Envelope) {
+    return xml.Envelope.Body;
+  }
+  throw new Error('Missing envelope: ' + response);
+};
+
+const handleError = err => {
+  if (!err.config) {
+    return err;
+  }
+
+  if (err.response) {
+    // The request was made and the server responded with a status code that falls out of the range of 2xx
+    return new Error(`${err.response.status} ${err.response.statusText}`);
+  }
+  // The request was made but no response was received
+  // OR
+  // Something happened in setting up the request that triggered an Error
+  return err;
+};

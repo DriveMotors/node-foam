@@ -1,7 +1,7 @@
 {
   "name": "@drivemotors/foam",
-  "version": "0.5.0",
-  "description": "A simple soap client",
+  "version": "0.6.0",
+  "description": "A simple SOAP client",
   "main": "foam.js",
   "keywords": [
     "soap",
@@ -15,21 +15,13 @@
   "license": "BSD-2-Clause",
   "dependencies": {
     "simple-xml": "~0.0.10",
-    "wreck": "^10.0.0"
-  },
-  "devDependencies": {
-    "mocha": "~1.18.2",
-    "chai": "~1.9.1",
-    "sinon": "~1.12.0",
-    "sinon-chai": "~2.6.0",
-    "replay": "git://github.com/AirAsiaExpedia/node-replay.git"
+    "axios": "^0.19.0"
   },
   "bugs": {
     "url": "https://github.com/AirAsiaExpedia/node-foam/issues"
   },
   "homepage": "https://github.com/AirAsiaExpedia/node-foam#readme",
   "directories": {
-    "example": "examples",
-    "test": "test"
+    "example": "examples"
   }
 }
